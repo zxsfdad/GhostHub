@@ -1,57 +1,42 @@
-local Players = game.Players
+-- GHOST LAG V1 - ABSOLUTE FINAL PERFECT VERSION --
+-- Key → ḠhồṧẗḸấḡ (copy-paste exactly)
+
+local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local CoreGui = game:GetService("CoreGui")
 
--- OBFUSCATED KEY
-local encodedKey = "4bmg4bmg4bmg4bmg4bmh4bmh4bmh4bmh4bmg4bmg4bmg4bmg4bmh4bmh4bmh4bmh" -- do NOT touch this
-
--- Base64 decode function
-local b='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-local function decode(data)
-    data = string.gsub(data, '[^'..b..'=]', '')
-    return (data:gsub('.', function(x)
-        if (x == '=') then return '' end
-        local r,f='',(b:find(x)-1)
-        for i=6,1,-1 do r=r..(f%2^i-f%2^(i-1)>0 and '1' or '0') end
-        return r;
-    end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)
-        if (#x ~= 8) then return '' end
-        local c=0
-        for i=1,8 do c=c+(x:sub(i,i)=='1' and 2^(8-i) or 0) end
-        return string.char(c)
-    end))
-end
-
--- Decode the key at runtime (only once)
-local correctKey = decode(encodedKey)
-
+local correctKey = "ḠhồṧẗḸấḡ"
 local unlocked = false
 local fired = false
 local minimized = false
 
--- Rest of the GUI & script 
+-- Main GUI
 local gui = Instance.new("ScreenGui", CoreGui)
 gui.ResetOnSpawn = false
 
 local main = Instance.new("Frame", gui)
-main.Size = UDim2.new(0, 380, 0, 180)
-main.Position = UDim2.new(0.5, -190, 0.5, -90)
+main.Size = UDim2.new(0, 380, 0, 210)
+main.Position = UDim2.new(0.5, -190, 0.5, -105)
 main.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
-main.BorderSizePixel = 0
 main.ClipsDescendants = true
 main.Active = true
 main.Draggable = true
 
-local corner = Instance.new("UICorner", main)
-corner.CornerRadius = UDim.new(0, 16)
+Instance.new("UICorner", main).CornerRadius = UDim.new(0, 16)
+Instance.new("UIStroke", main).Color = Color3.fromRGB(60, 60, 80)
+Instance.new("UIStroke", main).Thickness = 1.5
 
-local stroke = Instance.new("UIStroke", main)
-stroke.Color = Color3.fromRGB(60, 60, 80)
-stroke.Thickness = 1.5
+-- Top bar
+local topBar = Instance.new("Frame", main)
+topBar.Size = UDim2.new(1, 0, 0, 40)
+topBar.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
+topBar.ZIndex = 10
+Instance.new("UICorner", topBar).CornerRadius = UDim.new(0, 16)
 
-local title = Instance.new("TextLabel", main)
-title.Size = UDim2.new(1, 0, 0, 40)
+-- Title
+local title = Instance.new("TextLabel", topBar)
+title.Size = UDim2.new(1, -100, 1, 0)
 title.BackgroundTransparency = 1
 title.Text = "Ghost Lag V1"
 title.TextColor3 = Color3.fromRGB(220, 220, 255)
@@ -60,9 +45,19 @@ title.TextSize = 18
 title.TextXAlignment = Enum.TextXAlignment.Left
 title.Position = UDim2.new(0, 16, 0, 0)
 
-local close = Instance.new("TextButton", main)
+-- Buttons
+local mini = Instance.new("TextButton", topBar)
+mini.Size = UDim2.new(0, 36, 0, 36)
+mini.Position = UDim2.new(1, -84, 0, 2)
+mini.BackgroundTransparency = 1
+mini.Text = "−"
+mini.TextColor3 = Color3.fromRGB(200, 200, 255)
+mini.Font = Enum.Font.GothamBold
+mini.TextSize = 28
+
+local close = Instance.new("TextButton", topBar)
 close.Size = UDim2.new(0, 36, 0, 36)
-close.Position = UDim2.new(1, -44, 0, 4)
+close.Position = UDim2.new(1, -44, 0, 2)
 close.BackgroundTransparency = 1
 close.Text = "X"
 close.TextColor3 = Color3.fromRGB(255, 100, 100)
@@ -70,27 +65,18 @@ close.Font = Enum.Font.GothamBold
 close.TextSize = 20
 close.MouseButton1Click:Connect(function() gui:Destroy() end)
 
-local mini = Instance.new("TextButton", main)
-mini.Size = UDim2.new(0, 36, 0, 36)
-mini.Position = UDim2.new(1, -84, 0, 4)
-mini.BackgroundTransparency = 1
-mini.Text = "−"
-mini.TextColor3 = Color3.fromRGB(200, 200, 255)
-mini.Font = Enum.Font.GothamBold
-mini.TextSize = 28
-mini.MouseButton1Click:Connect(function()
-    minimized = not minimized
-    main.Size = minimized and UDim2.new(0, 380, 0, 40) or UDim2.new(0, 380, 0, 180)
-end)
+-- Content
+local content = Instance.new("Frame", main)
+content.Size = UDim2.new(1, 0, 1, -40)
+content.Position = UDim2.new(0, 0, 0, 40)
+content.BackgroundTransparency = 1
 
-local inputFrame = Instance.new("Frame", main)
+-- Textbox (moved up a bit — less gap from top bar)
+local inputFrame = Instance.new("Frame", content)
 inputFrame.Size = UDim2.new(0, 340, 0, 60)
-inputFrame.Position = UDim2.new(0.5, -170, 0.5, -45)
+inputFrame.Position = UDim2.new(0.5, -170, 0, 22)   -- ← reduced from 30 → 22
 inputFrame.BackgroundColor3 = Color3.fromRGB(28, 28, 35)
-inputFrame.BorderSizePixel = 0
-
-local inputCorner = Instance.new("UICorner", inputFrame)
-inputCorner.CornerRadius = UDim.new(0, 12)
+Instance.new("UICorner", inputFrame).CornerRadius = UDim.new(0, 12)
 
 local placeholder = Instance.new("TextLabel", inputFrame)
 placeholder.Size = UDim2.new(1, 0, 1, 0)
@@ -105,23 +91,17 @@ local textbox = Instance.new("TextBox", inputFrame)
 textbox.Size = UDim2.new(1, 0, 1, 0)
 textbox.BackgroundTransparency = 1
 textbox.Text = ""
-textbox.TextColor3 = Color3.new(1,1,1)
+textbox.TextColor3 = Color3.new(1, 1, 1)
 textbox.Font = Enum.Font.Gotham
 textbox.TextSize = 18
 textbox.TextXAlignment = Enum.TextXAlignment.Center
 textbox.ClearTextOnFocus = false
-textbox.ZIndex = 1
 
 textbox.Focused:Connect(function() placeholder.Visible = false end)
-textbox.FocusLost:Connect(function()
-    if textbox.Text == "" and not feedback.Visible then
-        placeholder.Visible = true
-    end
-end)
+textbox.FocusLost:Connect(function() if textbox.Text == "" then placeholder.Visible = true end end)
 
 local feedback = Instance.new("TextLabel", inputFrame)
 feedback.Size = UDim2.new(1, 0, 1, 0)
-feedback.BackgroundColor3 = Color3.fromRGB(28, 28, 35)
 feedback.BackgroundTransparency = 1
 feedback.Text = ""
 feedback.Font = Enum.Font.GothamBold
@@ -129,80 +109,92 @@ feedback.TextSize = 24
 feedback.TextXAlignment = Enum.TextXAlignment.Center
 feedback.TextYAlignment = Enum.TextYAlignment.Center
 feedback.Visible = false
-feedback.ZIndex = 10
+Instance.new("UICorner", feedback).CornerRadius = UDim.new(0, 12)
 
-local feedbackCorner = Instance.new("UICorner", feedback)
-feedbackCorner.CornerRadius = UDim.new(0, 12)
-
-local ok = Instance.new("TextButton", main)
+-- OK Button — perfect height, no collision
+local ok = Instance.new("TextButton", content)
 ok.Size = UDim2.new(0, 140, 0, 48)
-ok.Position = UDim2.new(0.5, -70, 1, -64)
+ok.Position = UDim2.new(0.5, -70, 0, 105)
 ok.BackgroundColor3 = Color3.fromRGB(90, 0, 255)
 ok.Text = "OK"
-ok.TextColor3 = Color3.new(1,1,1)
+ok.TextColor3 = Color3.new(1, 1, 1)
 ok.Font = Enum.Font.GothamBold
 ok.TextSize = 18
-local okCorner = Instance.new("UICorner", ok)
-okCorner.CornerRadius = UDim.new(0, 12)
+Instance.new("UICorner", ok).CornerRadius = UDim.new(0, 12)
 
+-- Minimize
+mini.MouseButton1Click:Connect(function()
+    minimized = not minimized
+    if minimized then
+        main:TweenSize(UDim2.new(0,380,0,40), "Out", "Quad", 0.35, true)
+    else
+        main:TweenSize(UDim2.new(0,380,0,210), "Out", "Quad", 0.35, true)
+    end
+end)
+
+-- Key check & accept
 ok.MouseButton1Click:Connect(function()
     if textbox.Text == correctKey then
         unlocked = true
-        placeholder.Visible = false
         feedback.Text = "Correct Key"
-        feedback.TextColor3 = Color3.fromRGB(0, 255, 120)
+        feedback.TextColor3 = Color3.fromRGB(0,255,120)
         feedback.BackgroundTransparency = 0
         feedback.Visible = true
         ok.Text = "Accepted"
-        ok.BackgroundColor3 = Color3.fromRGB(0, 170, 80)
-
+        ok.BackgroundColor3 = Color3.fromRGB(0,170,80)
         task.wait(3)
-        main:TweenSize(UDim2.new(0, 380, 0, 0), 0.4, "Out", "Quad", true)
+        main:TweenSize(UDim2.new(0,380,0,0), "Out", "Quad", 0.4, true)
         task.wait(0.5)
         gui:Destroy()
-
     else
-        placeholder.Visible = false
         feedback.Text = "Wrong Key"
-        feedback.TextColor3 = Color3.fromRGB(255, 80, 80)
+        feedback.TextColor3 = Color3.fromRGB(255,80,80)
         feedback.BackgroundTransparency = 0
         feedback.Visible = true
-
         task.delay(2, function()
-            if feedback.Text == "Wrong Key" then
-                feedback.Visible = false
-                feedback.BackgroundTransparency = 1
-                if textbox.Text == "" then placeholder.Visible = true end
-            end
+            feedback.Visible = false
+            feedback.BackgroundTransparency = 1
+            if textbox.Text == "" then placeholder.Visible = true end
         end)
     end
 end)
 
--- Lagging function
+-- Nukes
 local function buyAll()
-    for i = 1, 100 do
-        for _, v in workspace:GetDescendants() do
-            if v:IsA("ClickDetector") then fireclickdetector(v) end
-        end
-        for _, v in game.ReplicatedStorage:GetDescendants() do
-            if v:IsA("RemoteEvent") then
-                spawn(function() for _ = 1, 50 do v:FireServer() end end)
-            end
+    for i=1,100 do
+        for _,v in workspace:GetDescendants()do if v:IsA("ClickDetector then fireclickdetector(v) end end
+        for _,v in game.ReplicatedStorage:GetDescendants()do
+            if v:IsA("RemoteEvent")then spawn(function()for _=1,50 do v:FireServer()end end)end
         end
     end
 end
 
 local function laserNuke()
     while fired do
-        VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Q, false, game)
-        VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Q, false, game)
+        VirtualInputManager:SendKeyEvent(true,Enum.KeyCode.Q,false,game)
+        VirtualInputManager:SendKeyEvent(false,Enum.KeyCode.Q,false,game)
     end
 end
 
+-- PUBLIC TRIGGER — ANYONE CAN TYPE .lag
+for _,p in Players:GetPlayers()do
+    p.Chatted:Connect(function(msg)
+        if unlocked and not fired and string.lower(msg)==".lag"then
+            fired=true;spawn(buyAll);spawn(laserNuke)
+        end
+    end)
+end
+
+Players.PlayerAdded:Connect(function(p)
+    p.Chatted:Connect(function(msg)
+        if unlocked and not fired and string.lower(msg)==".lag"then
+            fired=true;spawn(buyAll);spawn(laserNuke)
+        end
+    end)
+end)
+
 Player.Chatted:Connect(function(msg)
-    if unlocked and not fired and msg == ".lag" then
-        fired = true
-        spawn(buyAll)
-        spawn(laserNuke)
+    if unlocked and not fired and msg==".lag"then
+        fired=true;spawn(buyAll);spawn(laserNuke)
     end
 end)
